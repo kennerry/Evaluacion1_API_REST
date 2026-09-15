@@ -21,6 +21,7 @@ function registrarIncidencia(req, res) {
     prioridad.length === 0
   ) {
     res.status(400).json({ mensaje: "No se permiten cadenas vacias" });
+    return;
   }
 
   const prioridadLower = prioridad.toLowerCase();
@@ -40,11 +41,37 @@ function registrarIncidencia(req, res) {
     empleado,
     area,
     descripcion,
-    prioridad: prioridadLower.charAt(0).toUpperCase() + prioridadLower.slice(1),
+    prioridad: prioridadLower.charAt(0).toUpperCase() + prioridadLower.slice(1), // Limpia la prioridad y la estandarizamos a Alta / Media / Baja
   };
 
   incidencias.push(incidenciaLimpia);
   res.status(200).json({ mensaje: "Incidencia registrada correctamente" });
+}
+
+// GET "/"
+function getIncidencias(req, res) {
+  res.status(200).json(incidencias);
+}
+
+// GET "/:id"
+function buscarIncidenciaPorId(req, res) {
+  const idABuscar = parseInt(req.params.id, 10);
+
+  if (isNaN(idABuscar)) {
+    res.status(400).json({ mensaje: "El ID proporcionado debe ser numerico" });
+    return;
+  }
+
+  const incidenciaEncontrada = incidencias.find(
+    (incidencia) => incidencia.id === idABuscar,
+  );
+
+  if (!incidenciaEncontrada) {
+    res.status(404).json({ mensaje: "No se encontro la incidencia" });
+    return;
+  }
+
+  res.status(200).json(incidenciaEncontrada);
 }
 
 //PUT /incidencias/id:/estado
@@ -158,9 +185,11 @@ const clasificarIncidencia = (req, res) => {
 
 module.exports = {
   incidencias,
+  registrarIncidencia,
+  getIncidencias,
+  buscarIncidenciaPorId,
   cambiarEstado,
   eliminarIncidencia,
   obtenerEstadisticas,
   clasificarIncidencia,
 };
-
