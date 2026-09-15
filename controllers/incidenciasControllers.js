@@ -77,10 +77,42 @@ const obtenerEstadisticas = (req, res) => {
   return res.json(estadisticas);
 };
 
+// GET /incidencias/:id/clasificacion
+const clasificarIncidencia = (req, res) => {
+  const id = parseInt(req.params.id, 10);
+
+  const incidencia = incidencias.find((item) => item.id === id);
+
+  if (!incidencia) {
+    return res.status(404).json({ mensaje: "Incidencia no encontrada" });
+  }
+
+  let clasificacion = "";
+
+  switch (incidencia.prioridad) {
+    case "Alta":
+      clasificacion = "Crítica";
+      break;
+    case "Media":
+      clasificacion = "Importante";
+      break;
+    case "Baja":
+      clasificacion = "Normal";
+      break;
+    default:
+      clasificacion = "No definida";
+  }
+
+  return res.json({
+    id: incidencia.id,
+    clasificacion,
+  });
+};
 
 module.exports = {
     incidencias,
     cambiarEstado,
     eliminarIncidencia, 
-    obtenerEstadisticas
+    obtenerEstadisticas,
+    clasificarIncidencia
 }; 
