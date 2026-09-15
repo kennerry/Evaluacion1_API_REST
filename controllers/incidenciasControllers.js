@@ -42,9 +42,45 @@ const eliminarIncidencia = (req, res) => {
 
     return res.json({mensaje: "Incidencia eliminada correctamente"});
 }
+// GET /estadisticas
+const obtenerEstadisticas = (req, res) => {
+  const estadisticas = incidencias.reduce(
+    (acumulador, item) => {
+      acumulador.totalIncidencias++;
+
+      switch (item.estado) {
+        case "Pendiente":
+          acumulador.pendientes++;
+          break;
+        case "En Proceso":
+          acumulador.enProceso++;
+          break;
+        case "Resuelta":
+          acumulador.resueltas++;
+          break;
+        case "Cancelada":
+          acumulador.canceladas++;
+          break;
+      }
+
+      return acumulador;
+    },
+    {
+      totalIncidencias: 0,
+      pendientes: 0,
+      enProceso: 0,
+      resueltas: 0,
+      canceladas: 0,
+    }
+  );
+
+  return res.json(estadisticas);
+};
+
 
 module.exports = {
     incidencias,
     cambiarEstado,
-    eliminarIncidencia
+    eliminarIncidencia, 
+    obtenerEstadisticas
 }; 
