@@ -7,17 +7,13 @@ let idContador = 1;
 
 // POST /incidencias
 function registrarIncidencia(req, res) {
-  let { empleado, area, descripcion, prioridad } = req.body;
+  const { empleado, area, descripcion, prioridad } = req.body;
 
   if (!empleado || !area || !descripcion || !prioridad) {
     res.status(400).json({ mensaje: "Todos los campos son obligatorio" });
     return;
   }
 
-  empleado = empleado.trim();
-  area = area.trim();
-  descripcion = descripcion.trim();
-  prioridad = prioridad.trim();
 
   if (
     validarTextoVacio(empleado) ||
@@ -41,10 +37,10 @@ function registrarIncidencia(req, res) {
     prioridadLower.charAt(0).toUpperCase() + prioridadLower.slice(1);
 
   const incidenciaLimpia = {
-    id: idContador++,
-    empleado,
-    area,
-    descripcion,
+id: idContador++,
+    empleado: empleado.trim(),
+    area: area.trim(),
+    descripcion: descripcion.trim(),
     prioridad: prioridadLimpia,
     estado: "Pendiente",
   };
