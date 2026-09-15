@@ -1,4 +1,9 @@
+// Llamamos a funciones helpers
+const { validarTextoVacio, validarPrioridad } = require("../utils/helpers.js");
+
 const incidencias = []; //Fuente de datos en memoria
+
+let idContador = 1;
 
 // POST /incidencias
 function registrarIncidencia(req, res) {
@@ -15,45 +20,45 @@ function registrarIncidencia(req, res) {
   prioridad = prioridad.trim();
 
   if (
-    empleado.length === 0 ||
-    area.length === 0 ||
-    descripcion.length === 0 ||
-    prioridad.length === 0
+    validarTextoVacio(empleado) ||
+    validarTextoVacio(area) ||
+    validarTextoVacio(descripcion) ||
+    validarTextoVacio(prioridad)
   ) {
     res.status(400).json({ mensaje: "No se permiten cadenas vacias" });
     return;
   }
 
-  const prioridadLower = prioridad.toLowerCase();
-
-  if (!(
-    prioridadLower == "media" ||
-    prioridadLower == "alta" ||
-    prioridadLower == "baja"
-  )) {
+  if (!validarPrioridad(prioridad)) {
     res
       .status(400)
       .json({ mensaje: "Prioridad solo puede ser: ('Alta', 'Media', 'Baja')" });
     return;
   }
 
+  const prioridadLower = prioridad.trim().toLowerCase();
+  const prioridadLimpia =
+    prioridadLower.charAt(0).toUpperCase() + prioridadLower.slice(1);
+
   const incidenciaLimpia = {
+    id: idContador++,
     empleado,
     area,
     descripcion,
-    prioridad: prioridadLower.charAt(0).toUpperCase() + prioridadLower.slice(1), // Limpia la prioridad y la estandarizamos a Alta / Media / Baja
+    prioridad: prioridadLimpia,
+    estado: "Pendiente",
   };
 
   incidencias.push(incidenciaLimpia);
-  res.status(200).json({ mensaje: "Incidencia registrada correctamente" });
+  res.status(201).json({ mensaje: "Incidencia registrada correctamente" });
 }
 
-// GET "/"
+// GET "/" Mostrar todas las incidencias
 function getIncidencias(req, res) {
   res.status(200).json(incidencias);
 }
 
-// GET "/:id"
+// GET "/:id" Buscar incidencia por ID
 function buscarIncidenciaPorId(req, res) {
   const idABuscar = parseInt(req.params.id, 10);
 
@@ -82,7 +87,7 @@ const cambiarEstado = (req, res) => {
   //Switch
   switch (estado) {
     case "Pendiente":
-    case "En proceso":
+    case "En Proceso":
     case "Resuelta":
     case "Cancelada":
       break;
@@ -107,9 +112,9 @@ const eliminarIncidencia = (req, res) => {
   //Busca la posicion en el arreglo
   const indice = incidencias.findIndex((item) => item.id === id);
 
-  //Valida que exista
+  //Valida que exista / -1 == no existe
   if (indice === -1) {
-    return res.status(404).json({ mensaje: "Incidencia encontrada" });
+    return res.status(404).json({ mensaje: "Incidencia no encontrada" });
   }
   //Elimina exactamente un elemento
   incidencias.splice(indice, 1);
@@ -165,7 +170,7 @@ const clasificarIncidencia = (req, res) => {
 
   switch (incidencia.prioridad) {
     case "Alta":
-      clasificacion = "Crítica";
+      clasificacion = "Critica";
       break;
     case "Media":
       clasificacion = "Importante";
