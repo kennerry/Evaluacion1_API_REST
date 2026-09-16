@@ -14,7 +14,7 @@ function registrarIncidencia(req, res) {
     return;
   }
 
-
+  //Valida con los helpers creados que el campo no este vacio
   if (
     validarTextoVacio(empleado) ||
     validarTextoVacio(area) ||
@@ -31,13 +31,16 @@ function registrarIncidencia(req, res) {
       .json({ mensaje: "Prioridad solo puede ser: ('Alta', 'Media', 'Baja')" });
     return;
   }
-
+  //Quitar los espacios extra en blanco y pasarlo a minusculas (normalizar el texto)
   const prioridadLower = prioridad.trim().toLowerCase();
+  //Slice hace que que devuelva de {media, baja}
+  //CharAt para volver el primer elemento en mayuscula
   const prioridadLimpia =
     prioridadLower.charAt(0).toUpperCase() + prioridadLower.slice(1);
-
+  //Devuelve algo limpio como Alta, en vez de alta
+  //Tanto slice como trim solo te devuelven una copia del string original con los cambios deseados no los mutan
   const incidenciaLimpia = {
-id: idContador++,
+    id: idContador++,
     empleado: empleado.trim(),
     area: area.trim(),
     descripcion: descripcion.trim(),
@@ -45,7 +48,7 @@ id: idContador++,
     estado: "Pendiente",
   };
 
-  incidencias.push(incidenciaLimpia);
+  incidencias.push(incidenciaLimpia); //Metemos los datos obtenidos dentro de nuestro arreglo
   res.status(201).json({ mensaje: "Incidencia registrada correctamente" });
 }
 
@@ -114,12 +117,14 @@ const eliminarIncidencia = (req, res) => {
   }
   //Elimina exactamente un elemento
   incidencias.splice(indice, 1);
-
+  //Si diera -1 el indice apuntaria al ultimo elemento del array para borrarlo hacia atras
   return res.json({ mensaje: "Incidencia eliminada correctamente" });
 };
 // GET /estadisticas
 const obtenerEstadisticas = (req, res) => {
-  const estadisticas = incidencias.reduce(
+  //reduce es un metodo de los arreglos que se encarga de reducir un arreglo a un solo valor (entero, objeto, string, etc)
+  const estadisticas = incidencias.reduce( 
+    //Callback function de reduce, finaliza hasta que termina con cada item del arreglo, y luego mete todo eso dentro de un objeto
     (acumulador, item) => {
       acumulador.totalIncidencias++;
 
@@ -140,6 +145,7 @@ const obtenerEstadisticas = (req, res) => {
 
       return acumulador;
     },
+    //Objeto con los contadores en cero (la referencia para el acumulador)
     {
       totalIncidencias: 0,
       pendientes: 0,
@@ -149,11 +155,12 @@ const obtenerEstadisticas = (req, res) => {
     },
   );
 
-  return res.json(estadisticas);
+  return res.json(estadisticas); 
 };
 
 // GET /incidencias/:id/clasificacion
 const clasificarIncidencia = (req, res) => {
+  //Por defecto req.params.id es un string aunque contenga un numero, el 10 significa que queremos que lo convierta a nuestro sistema decimal base 10
   const id = parseInt(req.params.id, 10);
 
   const incidencia = incidencias.find((item) => item.id === id);
@@ -183,7 +190,7 @@ const clasificarIncidencia = (req, res) => {
     clasificacion,
   });
 };
-
+//Es para hacer publico las funciones y que otras clases lo vean
 module.exports = {
   incidencias,
   registrarIncidencia,
