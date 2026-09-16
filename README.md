@@ -1,14 +1,14 @@
 # API REST - Sistema de Gestión de Incidencias
 
-API RESTful desarrollada con **Node.js** y **Express** para la gestión del ciclo de vida de incidencias técnicas en memoria. 
+API REST desarrollada con **Node.js** y **Express** para la gestión del ciclo de vida de incidencias técnicas en memoria. 
 El proyecto implementa una arquitectura modular (MVC) que separa el servidor, las capas de enrutamiento, la lógica de negocio y las validaciones auxiliares.
 
 ---
 
 ## Integrantes del Equipo
 
-* **Kenneth Iván Ramos Majano**
-* **William Enrique Hernandez Rodriguez**
+* **Kenneth Iván Ramos Majano 00308726**
+* **William Enrique Hernandez Rodriguez 00095725**
 
 ---
 
